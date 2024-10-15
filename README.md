@@ -5,9 +5,14 @@ DeepMutDTA introduces two key contributions to drug-target affinity (DTA) predic
 # Data
 ```
 data/platinum fold include the data of platinum dataset.
+data/GDSC fold include the data of GDSC dataset.
+data/PPI_1102 fold include the data of PPI_1102 dataset.
+data/PPI_1402 fold include the data of PPI_1402 dataset.
 
+Due to GitHub's limitations, the pre-training data is accessible via the following URL:
+1. BindingDB: https://www.bindingdb.org/rwd/bind/index.jsp
+2. BioLip: https://zhanggroup.org/BioLiP/
 ```
-
 
 # Requirements
 ```
@@ -24,6 +29,5 @@ transformers 4.40.1
 # Run the demo
 
 ```
-python main.py
+CUDA_VISIBLE_DEVICES=0 python main.py
 ```
-
