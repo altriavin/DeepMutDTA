@@ -1,6 +1,8 @@
-# Deciphering Mutation Effects on Drug-Target Affinity Using a Supervised SimSiam Network
+# Deciphering Mutation Effects on Drug-Target Affinity Through a Label-Aware Contrastive Learning Framework
 
-DeepMutDTA introduces two key contributions to drug-target affinity (DTA) prediction, particularly in the context of protein mutations. First, we developed DeepMutDTA, a sequence-based model for predicting DTA. It uses FastFormer for protein sequences and MolFormer for drug SMILES, with a Top-K attention mechanism to capture key interactions. This allows for accurate predictions of DTA, especially when experimental data is limited. Second, we propose SimSiam-MuTF, a fine-tuning framework that improves DeepMutDTA’s ability to handle protein mutations. Using a supervised SimSiam network and a rank-based loss function, this framework enhances the model’s performance on mutation data, even with few training samples.
+We propose a label-aware contrastive learning framework, **DeepMutDTA**, to decode the effects of mutations on drug-target affinity (DTA). Our approach introduces two significant contributions to DTA prediction, particularly concerning protein mutations. 
+1. **DeepMutDTA** is a sequence-based model designed to predict DTA by leveraging FastFormer for processing protein sequences and MolFormer for drug SMILES. A Top-K attention mechanism is used to identify key drug-target interactions, enabling accurate predictions, especially in scenarios with limited experimental data.
+2. We introduce **SimSiam-MuTF**, a label-aware contrastive learning fine-tuning framework that enhances DeepMutDTA's ability to handle protein mutations. By utilizing a supervised SimSiam network and a rank-based loss function, this framework boosts the model’s performance on mutation-specific data, even with minimal training samples.
 
 # Data
 ```
