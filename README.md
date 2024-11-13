@@ -14,6 +14,7 @@ data/PPI_1402 fold include the data of PPI_1402 dataset.
 Due to GitHub's limitations, the pre-training data is accessible via the following URL:
 1. BindingDB: https://www.bindingdb.org/rwd/bind/index.jsp
 2. BioLip: https://zhanggroup.org/BioLiP/
+Or, you can download the filtered data on: https://drive.google.com/file/d/1-Edz8NUyAWJ48w71tq9miHtxnxKCjk-X/view?usp=sharing
 ```
 
 # Requirements
@@ -29,9 +30,9 @@ transformers 4.40.1
 ```
 
 # Pretrain model
-、、、
+```
 The pretrain model can be available on https://drive.google.com/file/d/1r5F9cnOgDpu85VYhsgvAuVtCTcTw3UQu/view?usp=sharing
-、、、
+```
 
 # Run the demo
 
