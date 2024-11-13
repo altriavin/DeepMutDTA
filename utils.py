@@ -109,7 +109,7 @@ def collate_fn(batch):
 def get_data_loader(path, batch_size=256, shuffle=True):
     print(f'path: {path}')
     
-    path = "/root_data_path/" + path + ".csv"
+    path = f"data/platinum/" + path + ".csv"
     data = pd.read_csv(path)
     if "gdsc" in path:
         smiles, seq_wt, seq_mt, label_wt, label_mt = data["drug_smile"].values, data["seq_wt"].values, data["seq_mt"].values, data["label_wt"].values, data["label_mt"].values
@@ -134,8 +134,6 @@ def eval(test_targets, test_preds):
 
     conindex = concordance_index(test_targets, test_preds)
     return {
-        "RMSE": rmse,
         'PCC': pcc,
-        'SCC': scc,
-        'conindex': conindex
+        'SCC': scc
     }

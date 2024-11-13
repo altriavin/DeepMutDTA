@@ -20,7 +20,7 @@ from model_finetune import SuperviseSimSiam
 def train_test(train_loader, test_loader, val_loader, args, load_model=False):
     backbone_model = TransformerModel(args=args)
     if load_model == True:
-        path = '/root_path/model/model_cross_attention_1e-05_512_1.pth'
+        path = 'model/pretrain_model.pth'
         backbone_model.load_state_dict(torch.load(path))
         print(f'load backbone_model from {path}')
     else:   
@@ -32,11 +32,11 @@ def train_test(train_loader, test_loader, val_loader, args, load_model=False):
     
     mse_loss = nn.MSELoss()
     RnC_loss = RnCLoss(temperature=args.temp, label_diff='l1', feature_sim='l2')
-    best_ci = 0
+    best_pcc, best_scc = 0.0, 0.0
     best_result = {}
     for epoch in range(args.epochs):
         model.train()
-        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(train_loader):
+        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(tqdm(train_loader, desc="Training...")):
             
             smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt = smiles_padded.cuda(), smiles_mask.cuda(), seqs_wt_padded.cuda(), seqs_wt_mask.cuda(), label_wt.cuda(), seqs_mt_padded.cuda(), seqs_mt_mask.cuda(), label_mt.cuda()
             emb_view_1_wt, emb_view_2_wt, emb_view_1_mt, emb_view_2_mt, score_wt, score_mt = model(smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, seqs_mt_padded, seqs_mt_mask)
@@ -53,11 +53,13 @@ def train_test(train_loader, test_loader, val_loader, args, load_model=False):
 
         test_result = test_model(model, test_loader)
         
-        if test_result["conindex"] > best_ci:
-            best_ci = test_result["conindex"]
+        if test_result["PCC"] > best_pcc and test_result["SCC"] > best_scc:
+            best_pcc, best_scc = test_result["PCC"], test_result["SCC"]
 
             val_result = test_model(model, val_loader)
             best_result = val_result
+
+            print(f'epoch: {epoch}; pcc: {val_result["PCC"]}; scc: {val_result["SCC"]}')
             
             if args.save_model:
                 torch.save(model.backbone.state_dict(), f'fintune_model.pth')
@@ -71,75 +73,9 @@ def test_model(model, data_loader):
     model.eval()
     preds_wt, actuals_wt, preds_mt, actuals_mt = [], [], [], []
     with torch.no_grad():
-        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(data_loader):
+        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(tqdm(data_loader, desc="Testing...")):
             smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, seqs_mt_padded, seqs_mt_mask = smiles_padded.cuda(), smiles_mask.cuda(), seqs_wt_padded.cuda(), seqs_wt_mask.cuda(), seqs_mt_padded.cuda(), seqs_mt_mask.cuda()
             _, _, _, _, score_wt, score_mt = model(smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, seqs_mt_padded, seqs_mt_mask)
-            preds_wt.extend(score_wt.detach().cpu().numpy().tolist())
-            actuals_wt.extend(label_wt.numpy().tolist())
-            preds_mt.extend(score_mt.detach().cpu().numpy().tolist())
-            actuals_mt.extend(label_mt.numpy().tolist())
-    preds, actuals = preds_wt + preds_mt, actuals_wt + actuals_mt
-    preds, actuals = np.array(preds).flatten().tolist(), np.array(actuals).flatten().tolist()
-    result = eval(actuals, preds)
-    return result
-
-
-def train_test_without_simsiam(train_loader, test_loader, val_loader, args, load_model=False, SARS_CoV_2_data_loader=None, stanford_data_loader=None):
-    backbone_model = TransformerModel(args=args)
-    if load_model == True:
-        path = '/root_path/model/model_cross_attention_1e-05_512_1.pth'
-        backbone_model.load_state_dict(torch.load(path))
-        print(f'load backbone_model from {path}')
-    else:   
-        print(f'donot load pretrain_model!!!')
-    model = backbone_model.cuda()
-
-    optimizer = torch.optim.Adam([ {'params': model.parameters(), 'lr': args.learn_rate}])
-    
-    mse_loss = nn.MSELoss()
-    best_ci = 0
-    best_result = {}
-    for epoch in range(args.epochs):
-        model.train()
-        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(train_loader):
-            
-            smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt = smiles_padded.cuda(), smiles_mask.cuda(), seqs_wt_padded.cuda(), seqs_wt_mask.cuda(), label_wt.cuda(), seqs_mt_padded.cuda(), seqs_mt_mask.cuda(), label_mt.cuda()
-            emb_wt, score_wt = model(smiles_padded, seqs_wt_padded, smiles_mask, seqs_wt_mask)
-            emb_mt, score_mt = model(smiles_padded, seqs_mt_padded, smiles_mask, seqs_mt_mask)
-
-            mse_loss_1 = mse_loss(score_wt.squeeze(), label_wt)
-            mse_loss_2 = mse_loss(score_mt.squeeze(), label_mt)
-            loss = mse_loss_1 + mse_loss_2
-            
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-        
-        test_result = test_model_without_simsiam(model, test_loader)
-        
-        if test_result["conindex"] > best_ci:
-            best_ci = test_result["conindex"]
-
-            val_result = test_model_without_simsiam(model, val_loader)
-            best_result = val_result
-
-            if args.save_model:
-                torch.save(model.state_dict(), f'fintune_model_mse.pth')
-                print(f'save model to fintune_model_mse.pth')
-            else:
-                print(f'donot save model!!!')
-    return best_result
-
-
-def test_model_without_simsiam(model, data_loader):
-    model.eval()
-    preds_wt, actuals_wt, preds_mt, actuals_mt = [], [], [], []
-    with torch.no_grad():
-        for idx, (smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, label_wt, seqs_mt_padded, seqs_mt_mask, label_mt) in enumerate(data_loader):
-            smiles_padded, smiles_mask, seqs_wt_padded, seqs_wt_mask, seqs_mt_padded, seqs_mt_mask = smiles_padded.cuda(), smiles_mask.cuda(), seqs_wt_padded.cuda(), seqs_wt_mask.cuda(), seqs_mt_padded.cuda(), seqs_mt_mask.cuda()
-            _, score_wt = model(smiles_padded, seqs_wt_padded, smiles_mask, seqs_wt_mask)
-            _, score_mt = model(smiles_padded, seqs_mt_padded, smiles_mask, seqs_mt_mask)
             preds_wt.extend(score_wt.detach().cpu().numpy().tolist())
             actuals_wt.extend(label_wt.numpy().tolist())
             preds_mt.extend(score_mt.detach().cpu().numpy().tolist())

@@ -7,9 +7,10 @@ We propose a label-aware contrastive learning framework, **DeepMutDTA**, to deco
 # Data
 ```
 data/platinum fold include the data of platinum dataset.
-data/GDSC fold include the data of GDSC dataset.
-data/PPI_1102 fold include the data of PPI_1102 dataset.
-data/PPI_1402 fold include the data of PPI_1402 dataset.
+data/data_SimSiam_MuTF/GDSC fold include the data of GDSC dataset.
+data/data_SimSiam_MuTF/PPI_1102 fold include the data of PPI_1102 dataset.
+data/data_SimSiam_MuTF/PPI_1402 fold include the data of PPI_1402 dataset.
+data/sars_cov_2.csv is the data of sars_cov_2 dataset.
 
 Due to GitHub's limitations, the pre-training data is accessible via the following URL:
 1. BindingDB: https://www.bindingdb.org/rwd/bind/index.jsp
@@ -25,17 +26,17 @@ numpy 1.24.3
 pandas 2.0.3
 scikit-learn 0.24.0
 scipy 1.10.1
-subword-nmt 0.3.8
 transformers 4.40.1
 ```
 
 # Pretrain model
-```
-The pretrain model can be available on https://drive.google.com/file/d/1r5F9cnOgDpu85VYhsgvAuVtCTcTw3UQu/view?usp=sharing
-```
+
+1. The pretrained model is available at https://drive.google.com/file/d/1r5F9cnOgDpu85VYhsgvAuVtCTcTw3UQu/view?usp=sharing. You can download the model to the model folder or another folder and simply modify line 23 of main.py to specify the path.
+
+2. The model of Molformer can be available on https://github.com/IBM/molformer. You can download the model the any folder and simply modify line 41 and 48 of utils.py and line 111 of model.py to specify the path.
 
 # Run the demo
 
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py
+CUDA_VISIBLE_DEVICES=0 python main.py --load_model True
 ```
