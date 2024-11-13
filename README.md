@@ -38,5 +38,9 @@ transformers 4.40.1
 # Run the demo
 
 ```
+CUDA_VISIBLE_DEVICES=0 python main.py
+```
+If you want to load the pretrained model for fine-tuning, specify the path and use:
+```
 CUDA_VISIBLE_DEVICES=0 python main.py --load_model True
 ```
