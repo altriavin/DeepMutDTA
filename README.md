@@ -28,6 +28,11 @@ subword-nmt 0.3.8
 transformers 4.40.1
 ```
 
+# Pretrain model
+、、、
+The pretrain model can be available on https://drive.google.com/file/d/1r5F9cnOgDpu85VYhsgvAuVtCTcTw3UQu/view?usp=sharing
+、、、
+
 # Run the demo
 
 ```
