@@ -16,7 +16,7 @@ DeepMutDTA makes two significant contributions to the field of DTA prediction, p
    - **Top-K Attention Mechanism:** Identifies key interactions between drugs and target proteins, which is critical for accurate affinity predictions, especially in data-scarce scenarios.
 
 2. **Enhanced Mutation-Specific Prediction with SimSiam-MuTF:**  
-   - **Label-Aware Contrastive Learning:** Implements a supervised SimSiam network combined with a rank-based loss function to better capture mutation-specific features.  
+   - **Label-Aware Contrastive Learning:** Implements a supervised SimSiam network combined with a task-specify (including regression and classification task) loss function to better capture mutation-specific features.  
    - **Robust Fine-Tuning:** Improves model performance on mutation-specific data even with minimal training samples by focusing on the differences induced by mutations.
 
 ---
