@@ -109,12 +109,9 @@ def collate_fn(batch):
 def get_data_loader(path, batch_size=256, shuffle=True):
     print(f'path: {path}')
     
-    path = f"data/platinum/" + path + ".csv"
+    # path = f"data/platinum/" + path + ".csv"
     data = pd.read_csv(path)
-    if "gdsc" in path:
-        smiles, seq_wt, seq_mt, label_wt, label_mt = data["drug_smile"].values, data["seq_wt"].values, data["seq_mt"].values, data["label_wt"].values, data["label_mt"].values
-    else:
-        smiles, seq_wt, seq_mt, label_wt, label_mt = data["smile"].values, data["seq_wt"].values, data["seq_mt"].values, data["label_wt"].values, data["label_mt"].values
+    smiles, seq_wt, seq_mt, label_wt, label_mt = data["smile"].values, data["seq_wt"].values, data["seq_mt"].values, data["label_wt"].values, data["label_mt"].values
     
     smiles_token, seqs_wt_token, seqs_mt_token = tokenizer_seq_smile(smiles, seq_wt, seq_mt)
     CPI_dataset = CPIDataset(smiles_token, seqs_wt_token, label_wt, seqs_mt_token, label_mt)
@@ -123,7 +120,7 @@ def get_data_loader(path, batch_size=256, shuffle=True):
     return data_loader
 
 
-def eval(test_targets, test_preds):
+def eval_reg(test_targets, test_preds):
     test_targets = np.array(test_targets).flatten()
     test_preds = np.array(test_preds).flatten()
     mse = mean_squared_error(test_targets, test_preds)
@@ -136,4 +133,36 @@ def eval(test_targets, test_preds):
     return {
         'PCC': pcc,
         'SCC': scc
+    }
+
+
+def eval_clf(test_targets, test_preds):
+    test_targets = np.array(test_targets).flatten()
+    test_preds = np.array(test_preds).flatten()
+    mse = mean_squared_error(test_targets, test_preds)
+    rmse = np.sqrt(mse)
+    
+    pcc, p_value = pearsonr(test_targets, test_preds)
+    scc, s_p_value = spearmanr(test_targets, test_preds)
+
+    conindex = concordance_index(test_targets, test_preds)
+    return {
+        'PCC': pcc,
+        'SCC': scc
+    }
+
+
+def eval_clf(test_targets, test_preds):
+    test_targets = np.array(test_targets).flatten()
+    test_preds = np.array(test_preds).flatten()
+    
+    fpr, tpr, _ = roc_curve(test_targets, test_preds)
+    auroc = auc(fpr, tpr)
+
+    precision, recall, _ = precision_recall_curve(test_targets, test_preds)
+    aupr = auc(recall, precision)
+
+    return {
+        "AUC": auroc,
+        "AUPR": aupr
     }

@@ -151,6 +151,7 @@ class TransformerModel(nn.Module):
         self.max_seq_len = args.max_seq_len
         self.max_drug_len = args.max_drug_len
         self.topk = args.topk
+        self.task_type = args.task_type
 
         self.protein_encode = FastformerEncoder(args=args).cuda()
         self.drug_encode = DrugEncoder(self.max_drug_len, self.hidden_size)
@@ -176,13 +177,15 @@ class TransformerModel(nn.Module):
         seqs_emb, smiles_emb = F.normalize(seqs_emb, p=2, dim=1), F.normalize(smiles_emb, p=2, dim=1)
 
         smiles_output, smiles_attention = self.fusion_layer(seqs_emb, smiles_emb, smiles_emb)
-        smiles_output, smiles_attn_pool = self.attention_pool(smiles_emb)
+        smiles_output, smiles_attn_pool = self.attention_pool(smiles_output)
         seqs_output, seqs_attention = self.fusion_layer(smiles_emb, seqs_emb, seqs_emb)
-        seqs_output, seqs_attn_pool = self.attention_pool(seqs_emb)
+        seqs_output, seqs_attn_pool = self.attention_pool(seqs_output)
 
         emb = torch.cat((smiles_output, seqs_output), 1)
         emb = F.normalize(emb, p=2, dim=1)
         output = self.fc(emb)
+        if self.task_type == "clf":
+            output = torch.sigmoid(output)
         
         return emb, output.squeeze(1), smiles_attn_pool, seqs_attn_pool
         

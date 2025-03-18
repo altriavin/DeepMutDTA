@@ -76,3 +76,36 @@ class RnCLoss(nn.Module):
             loss += - (pos_log_probs / (n * (n - 1))).sum()
 
         return loss
+
+
+def clf_contrastive_loss(temp, embedding, label):
+    device = embedding.device
+    label = label.to(device)
+
+    normalized_embeddings = F.normalize(embedding, p=2, dim=1)
+    
+    sim_matrix = torch.matmul(normalized_embeddings, normalized_embeddings.t()) / temp
+    exp_sim = torch.exp(sim_matrix)
+    
+    N = exp_sim.size(0)
+    diag_mask = torch.eye(N, device=device, dtype=torch.bool)
+    off_diag_mask = ~diag_mask
+
+    row_sum = torch.sum(exp_sim.masked_select(off_diag_mask).view(N, -1), dim=1)
+    
+    positive_mask = (label.unsqueeze(0) == label.unsqueeze(1)) & off_diag_mask
+    positive_mask = positive_mask.float()
+
+    log_prob = sim_matrix - torch.log(row_sum.unsqueeze(1))
+    
+    positive_log_prob = log_prob * positive_mask
+    positive_count = positive_mask.sum(dim=1)
+
+    loss_per_sample = torch.where(
+        positive_count > 0,
+        -positive_log_prob.sum(dim=1) / positive_count,
+        torch.zeros_like(positive_count)
+    )
+
+    loss = loss_per_sample.sum()
+    return loss
