@@ -37,6 +37,28 @@ To accelerate your experiments, pre-trained models are provided:
 
 ---
 
+## Requirements
+
+Before running the code, please ensure that you have installed the following packages:
+
+```bash
+torch==2.1.0  
+python==3.8.19  
+numpy==1.24.3  
+pandas==2.0.3  
+scikit-learn==0.24.0  
+scipy==1.10.1  
+transformers==4.40.1  
+```
+
+You can install these dependencies using `pip`:
+
+```bash
+pip install torch==2.1.0 python==3.8.19 numpy==1.24.3 pandas==2.0.3 scikit-learn==0.24.0 scipy==1.10.1 transformers==4.40.1
+```
+
+---
+
 ## Datasets
 
 The repository supports both demo datasets and custom data. Below are the details for each option:
@@ -88,28 +110,6 @@ For classification tasks, format your data as follows:
 | wt_protein_seq  | mt_protein_seq  | drug_smile   | 0            | 1            |
 
 Ensure your dataset follows the above specifications before starting the training process.
-
----
-
-## Requirements
-
-Before running the code, please ensure that you have installed the following packages:
-
-```bash
-torch==2.1.0  
-python==3.8.19  
-numpy==1.24.3  
-pandas==2.0.3  
-scikit-learn==0.24.0  
-scipy==1.10.1  
-transformers==4.40.1  
-```
-
-You can install these dependencies using `pip`:
-
-```bash
-pip install torch==2.1.0 python==3.8.19 numpy==1.24.3 pandas==2.0.3 scikit-learn==0.24.0 scipy==1.10.1 transformers==4.40.1
-```
 
 ---
 
