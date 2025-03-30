@@ -86,7 +86,7 @@ Alternatively, you may use our preprocessed data available at:
 | **Pre-training**  | [pre-training dataset](https://drive.google.com/file/d/1-Edz8NUyAWJ48w71tq9miHtxnxKCjk-X/view?usp=sharing) |
 | **DEKOIS2.0**     | [DEKOIS2.0](https://drive.google.com/drive/folders/14Dn_Y4eq3ygLUecaqWTStFWlZS2N6xBc?usp=sharing) |
 | **DUD-E**         | [DUD-E](https://drive.google.com/drive/folders/18yn-Zt1x-2nxzL3dubRTci8GPzV2Jmns?usp=sharing) |
-| **Mutation Data** | [Mutation data](https://drive.google.com/drive/folders/127SAD1cS_xInSdPO1V15vIZu1o6h8PXi?usp=sharing) |
+| **Mutation Data (Platinum, SARS-CoV-2, HIV and Cancer dataset)** | [Mutation data](https://drive.google.com/drive/folders/127SAD1cS_xInSdPO1V15vIZu1o6h8PXi?usp=sharing) |
 | **PPI Data**      | [PPI dataset](https://drive.google.com/open?id=12VaSAVw1q_8N2YRTPMBLmvlDZeXDqTfm&usp=drive_fs) |
 
 ### 2. Training and Testing on Custom Data
